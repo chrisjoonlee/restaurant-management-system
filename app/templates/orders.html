@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="assign-table-form">
+    <p>ASSIGN TABLE</p>
+    <form method="POST" action="{{ url_for('.assign_table') }}">
+        {{ table_assignment_form.csrf_token }}
+        <p>{{ table_assignment_form.tables() }}</p>
+        <p>{{ table_assignment_form.servers() }}</p>
+        <p>{{ table_assignment_form.assign() }}</p>
+    </form>
+</div>
+
+<div class="open-orders">
+    <h1>YOUR OPEN ORDERS</h1>
+    <table>
+        <tbody>
+            {% for order_and_total_price in orders_and_total_prices %}
+            <tr>
+                <td>Table {{ order_and_total_price[0].table.number }}</td>
+                <td>
+                    {{ order_and_total_price[1] }}
+                </td>
+                <td>
+                    <form method="POST" action="/orders/{{ order_and_total_price[0].id }}/close">
+                        <button>
+                            CLOSE TABLE
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <button form="add-menu-items-form" formaction="/orders/{{ order_and_total_price[0].id }}/items">
+                        ADD TO ORDER
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="menu-items">
+    <form id="add-menu-items-form" method="POST">
+        {% for type in menu_item_types %}
+        <div class="{{ type.name.lower() }}">
+            <h1>{{ type.name }}</h1>
+
+            {% for item in type.items %}
+            <input type="checkbox" id="{{ type.name.lower() }}" name="{{ item.name.lower() }}" value="{{ item.id }}" />
+            <label for="{{ type.name.lower() }}">{{ item.name }}</label>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </form>
+</div>
+{% endblock %}
